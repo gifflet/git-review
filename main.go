@@ -73,9 +73,19 @@ func main() {
 	}
 
 	baseDir := outputDir
+
+	// Check if a file exists with the same name as our intended directory
+	fileInfo, err := os.Stat(baseDir)
+	if err == nil {
+		if !fileInfo.IsDir() {
+			fmt.Printf("Error: '%s' already exists as a file. Please specify a different output directory using --output-dir\n", baseDir)
+			os.Exit(1)
+		}
+	}
+
 	err = os.MkdirAll(baseDir, 0755)
 	if err != nil {
-		fmt.Printf("Error creating base directory: %v\n", err)
+		fmt.Printf("Error creating output directory: %v\n", err)
 		os.Exit(1)
 	}
 
