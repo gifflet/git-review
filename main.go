@@ -17,7 +17,7 @@ func formatCommitHash(hash string) string {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: git-review <initial_commit> [final_commit] [--main-branch <branch_name>] [--project-path <path>]")
+		fmt.Println("Usage: git-review <initial_commit> [final_commit] [--main-branch <branch_name>] [--project-path <path>] [--output-dir <path>]")
 		os.Exit(1)
 	}
 
@@ -25,6 +25,7 @@ func main() {
 	finalCommit := "HEAD"
 	mainBranch := ""
 	projectPath := "."
+	outputDir := "git-review" // Default output directory
 
 	// Parse arguments
 	for i := 2; i < len(os.Args); i++ {
@@ -37,6 +38,11 @@ func main() {
 		case "--project-path":
 			if i+1 < len(os.Args) {
 				projectPath = os.Args[i+1]
+				i++ // Skip next argument
+			}
+		case "--output-dir":
+			if i+1 < len(os.Args) {
+				outputDir = os.Args[i+1]
 				i++ // Skip next argument
 			}
 		default:
@@ -53,13 +59,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Change to project directory
-	err = os.Chdir(absProjectPath)
-	if err != nil {
-		fmt.Printf("Error changing to project directory: %v\n", err)
-		os.Exit(1)
-	}
-
 	// If finalCommit is HEAD, we need to get the current hash
 	if finalCommit == "HEAD" {
 		cmd := exec.Command("git", "rev-parse", "HEAD")
@@ -73,7 +72,7 @@ func main() {
 		finalCommit = formatCommitHash(strings.TrimSpace(string(output)))
 	}
 
-	baseDir := "git-review"
+	baseDir := outputDir
 	err = os.MkdirAll(baseDir, 0755)
 	if err != nil {
 		fmt.Printf("Error creating base directory: %v\n", err)
@@ -109,10 +108,6 @@ func main() {
 		for _, file := range allFiles {
 			if file == "" {
 				continue
-			}
-
-			if strings.Contains(file, "gads-logo-light.png") {
-				fmt.Println("gads-logo-light.png")
 			}
 
 			// Check if this file has changes that are unique to our branch
