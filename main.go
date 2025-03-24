@@ -88,47 +88,90 @@ func main() {
 	}
 
 	// Get list of modified files
-	var cmd *exec.Cmd
+	var files []string
 	if mainBranch != "" {
-		// Get files that were modified in the commit range but not in main branch
-		cmd = exec.Command("git", "diff", "--name-only",
-			fmt.Sprintf("%s...%s", initialCommit, finalCommit),
-			"--not", mainBranch)
+		// First get all files modified between initial and final commit
+		cmd := exec.Command("git", "diff", "--name-only",
+			fmt.Sprintf("%s..%s", initialCommit, finalCommit))
 		cmd.Dir = absProjectPath
-	} else {
-		cmd = exec.Command("git", "diff", "--name-only", initialCommit, finalCommit)
-		cmd.Dir = absProjectPath
-	}
-	cmd.Stderr = os.Stderr
-	output, err := cmd.Output()
-	if err != nil {
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			fmt.Printf("Git error: %s\n", string(exitErr.Stderr))
+		cmd.Stderr = os.Stderr
+		output, err := cmd.Output()
+		if err != nil {
+			if exitErr, ok := err.(*exec.ExitError); ok {
+				fmt.Printf("Git error: %s\n", string(exitErr.Stderr))
+			}
+			fmt.Printf("Error executing git diff: %v\n", err)
+			os.Exit(1)
 		}
-		fmt.Printf("Error executing git diff: %v\n", err)
-		os.Exit(1)
+		allFiles := strings.Split(strings.TrimSpace(string(output)), "\n")
+
+		// For each file, check if it was also modified in the main branch
+		for _, file := range allFiles {
+			if file == "" {
+				continue
+			}
+
+			if strings.Contains(file, "gads-logo-light.png") {
+				fmt.Println("gads-logo-light.png")
+			}
+
+			// Check if this file has changes that are unique to our branch
+			// by comparing our branch with the merge base against main branch
+			mergeBaseCmd := exec.Command("git", "merge-base", mainBranch, finalCommit)
+			mergeBaseCmd.Dir = absProjectPath
+			mergeBase, err := mergeBaseCmd.Output()
+			if err != nil {
+				fmt.Printf("Error finding merge base: %v\n", err)
+				continue
+			}
+			mergeBaseCommit := strings.TrimSpace(string(mergeBase))
+
+			// Get changes between merge base and final commit
+			diffCmd := exec.Command("git", "diff", "--name-only",
+				fmt.Sprintf("%s..%s", mergeBaseCommit, finalCommit),
+				"--", file)
+			diffCmd.Dir = absProjectPath
+			diff, err := diffCmd.Output()
+			if err != nil {
+				fmt.Printf("Error checking file %s: %v\n", file, err)
+				continue
+			}
+
+			if strings.TrimSpace(string(diff)) != "" {
+				// This file has changes that don't exist in main branch
+				files = append(files, file)
+			}
+		}
+	} else {
+		// If no main branch specified, just get all changed files
+		cmd := exec.Command("git", "diff", "--name-only", initialCommit, finalCommit)
+		cmd.Dir = absProjectPath
+		cmd.Stderr = os.Stderr
+		output, err := cmd.Output()
+		if err != nil {
+			if exitErr, ok := err.(*exec.ExitError); ok {
+				fmt.Printf("Git error: %s\n", string(exitErr.Stderr))
+			}
+			fmt.Printf("Error executing git diff: %v\n", err)
+			os.Exit(1)
+		}
+		allFiles := strings.Split(strings.TrimSpace(string(output)), "\n")
+		for _, file := range allFiles {
+			if file != "" {
+				files = append(files, file)
+			}
+		}
 	}
 
-	files := strings.Split(strings.TrimSpace(string(output)), "\n")
-	if len(files) == 1 && files[0] == "" {
+	if len(files) == 0 {
 		fmt.Println("No modified files found")
 		os.Exit(0)
 	}
 
 	// For each file, extract and save the diff
 	for _, file := range files {
-		var diffCmd *exec.Cmd
-		if mainBranch != "" {
-			// Get diff excluding changes from main branch
-			diffCmd = exec.Command("git", "diff",
-				fmt.Sprintf("%s...%s", initialCommit, finalCommit),
-				"--not", mainBranch,
-				"--", file)
-			diffCmd.Dir = absProjectPath
-		} else {
-			diffCmd = exec.Command("git", "diff", initialCommit, finalCommit, "--", file)
-			diffCmd.Dir = absProjectPath
-		}
+		diffCmd := exec.Command("git", "diff", initialCommit, finalCommit, "--", file)
+		diffCmd.Dir = absProjectPath
 		diff, err := diffCmd.Output()
 		if err != nil {
 			fmt.Printf("Error getting diff for file %s: %v\n", file, err)
