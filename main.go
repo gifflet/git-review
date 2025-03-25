@@ -8,6 +8,12 @@ import (
 	"strings"
 )
 
+var AppVersion = "dev"
+
+func showVersion() {
+	fmt.Printf("git-review version %s\n", AppVersion)
+}
+
 func formatCommitHash(hash string) string {
 	if len(hash) < 7 {
 		return hash
@@ -19,6 +25,12 @@ func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: git-review <initial_commit> [final_commit] [--main-branch <branch_name>] [--project-path <path>] [--output-dir <path>]")
 		os.Exit(1)
+	}
+
+	// Add version flag check
+	if os.Args[1] == "--version" || os.Args[1] == "-v" {
+		showVersion()
+		os.Exit(0)
 	}
 
 	initialCommit := formatCommitHash(os.Args[1])
