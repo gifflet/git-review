@@ -19,18 +19,39 @@ Git Review is a powerful command-line tool designed to streamline code reviews b
 - Go (version 1.20 or higher)
 - Operating Systems: Windows, macOS, Linux
 
+## Installation 🛠️
+
+To install Git Review, run:
+
+```bash
+go install github.com/gifflet/git-review@latest
+```
+
+The binary will be placed in:
+- **Linux/macOS**: `$HOME/go/bin/git-review`
+- **Windows**: `%USERPROFILE%\go\bin\git-review.exe`
+
+### Configure Git Review as a Global Command
+
+After installation, you must configure `git-review` as a global Git command for easier usage:
+
+**Linux/macOS**:
+```bash
+git config --global alias.review '!"$HOME/go/bin/git-review"'
+```
+
+**Windows**:
+```powershell
+git config --global alias.review "!%USERPROFILE%/go/bin/git-review.exe"
+```
+
+Once configured, you can run `git review` from anywhere within your repositories.
+
 ## Quick Start 🚀
 
 ```bash
-# Clone the repository
-git clone https://github.com/gifflet/git-review.git
-
-# Build the binary
-cd git-review
-go build .
-
 # Basic usage
-git-review <initial_commit> [final_commit]
+git review <initial_commit> [final_commit]
 ```
 
 ## Features ✨
@@ -39,28 +60,12 @@ git-review <initial_commit> [final_commit]
 - 💾 Save diffs of modified files to a specified output directory
 - 🌿 Flexible branch comparison with optional main branch filtering
 
-## Installation 🛠️
-
-### Method 1: Build from Source
-
-```bash
-git clone https://github.com/gifflet/git-review.git
-cd git-review
-go build .
-```
-
-### Method 2: Go Install
-
-```bash
-go install github.com/gifflet/git-review@latest
-```
-
-## Usage 📖
+## Usage 📚
 
 ### Basic Command Structure
 
 ```bash
-git-review <initial_commit> [final_commit] [options]
+git review <initial_commit> [final_commit] [options]
 ```
 
 ### Comprehensive Options
@@ -76,17 +81,17 @@ git-review <initial_commit> [final_commit] [options]
 
 #### 1. Basic Commit Comparison
 ```powershell
-git-review c9286370 78094299
+git review c9286370 78094299
 ```
 
 #### 2. Comparing with Main Branch Context
 ```powershell
-git-review c9286370 78094299 --main-branch main
+git review c9286370 78094299 --main-branch main
 ```
 
 #### 3. Specifying Custom Project and Output Paths
 ```powershell
-git-review c9286370 78094299 \
+git review c9286370 78094299 \
   --main-branch main \
   --project-path "C:\Projects\MyRepo" \
   --output-dir "./review-output"
@@ -116,8 +121,7 @@ We welcome contributions! Please follow these steps:
 4. Push to the branch (`git push origin feature/amazing-improvement`)
 5. Open a Pull Request
 
-
-## License 📄
+## License 📝
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
