@@ -51,7 +51,7 @@ Once configured, you can run `git review` from anywhere within your repositories
 
 ```bash
 # Basic usage
-git review <initial_commit> [final_commit]
+git review -i <initial_commit>
 ```
 
 ## Features ✨
@@ -65,36 +65,40 @@ git review <initial_commit> [final_commit]
 ### Basic Command Structure
 
 ```bash
-git review <initial_commit> [final_commit] [options]
+git review -i <initial_commit> [-f <final_commit>] [options]
 ```
 
-### Comprehensive Options
+### Available Options
 
-- `<initial_commit>`: **Required**. Starting commit hash for comparison
-- `[final_commit]`: **Optional**. Ending commit hash (defaults to `HEAD`)
-- `--version, -v`: Optional. Display the current version of git-review
-- `--main-branch <branch_name>`: Optional main branch for refined comparisons
-- `--project-path <path>`: Optional project directory path
-- `--output-dir <path>`: Optional output directory for diff files
+- `-i, --initial <commit>`: **Required**. Starting commit hash for comparison
+- `-f, --final <commit>`: **Optional**. Ending commit hash (defaults to `HEAD`)
+- `-m, --main-branch <branch_name>`: **Optional**. Main branch for refined comparisons
+- `-p, --project-path <path>`: **Optional**. Project directory path (defaults to current directory)
+- `-o, --output-dir <path>`: **Optional**. Output directory for diff files (defaults to `git-review`)
 
 ### Detailed Usage Scenarios
 
 #### 1. Basic Commit Comparison
 ```powershell
-git review c9286370 78094299
+git review -i c9286370
 ```
 
-#### 2. Comparing with Main Branch Context
+#### 2. Comparing Two Specific Commits
 ```powershell
-git review c9286370 78094299 --main-branch main
+git review -i c9286370 -f 78094299
 ```
 
-#### 3. Specifying Custom Project and Output Paths
+#### 3. Comparing with Main Branch Context
 ```powershell
-git review c9286370 78094299 \
-  --main-branch main \
-  --project-path "C:\Projects\MyRepo" \
-  --output-dir "./review-output"
+git review -i c9286370 -f 78094299 -m main
+```
+
+#### 4. Specifying Custom Project and Output Paths
+```powershell
+git review -i c9286370 -f 78094299 \
+  -m main \
+  -p "C:\Projects\MyRepo" \
+  -o "./review-output"
 ```
 
 ## Troubleshooting 🛠
