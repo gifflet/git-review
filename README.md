@@ -49,7 +49,7 @@ cd git-review
 go build .
 ```
 
-### Method 2: Go Install (Coming Soon)
+### Method 2: Go Install
 
 ```bash
 go install github.com/gifflet/git-review@latest
@@ -67,6 +67,7 @@ git-review <initial_commit> [final_commit] [options]
 
 - `<initial_commit>`: **Required**. Starting commit hash for comparison
 - `[final_commit]`: **Optional**. Ending commit hash (defaults to `HEAD`)
+- `--version, -v`: Optional. Display the current version of git-review
 - `--main-branch <branch_name>`: Optional main branch for refined comparisons
 - `--project-path <path>`: Optional project directory path
 - `--output-dir <path>`: Optional output directory for diff files
