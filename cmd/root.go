@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/gifflet/git-review/internal/config"
 	"github.com/spf13/cobra"
 )
 
@@ -17,6 +18,9 @@ var (
 
 	// Application version
 	AppVersion = "dev"
+
+	// Configuration
+	appConfig *config.Config
 
 	// Root command
 	rootCmd = &cobra.Command{
@@ -48,6 +52,11 @@ changes between Git commits.`,
 		Version: AppVersion,
 	}
 )
+
+// SetConfig sets the application configuration
+func SetConfig(cfg *config.Config) {
+	appConfig = cfg
+}
 
 // Execute adds all child commands to the root command and sets flags
 func Execute() {
