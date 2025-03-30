@@ -22,7 +22,7 @@ func executeReview() {
 	initialCommit = formatCommitHash(initialCommit)
 
 	// Convert relative path to absolute if needed
-	absProjectPath, err := filepath.Abs(projectPath)
+	absProjectPath, err := filepath.Abs(ProjectPath)
 	if err != nil {
 		fmt.Printf("Error resolving project path: %v\n", err)
 		os.Exit(1)

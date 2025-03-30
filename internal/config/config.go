@@ -20,7 +20,7 @@ type Config struct {
 }
 
 // LoadConfig reads configuration from files and environment variables
-func LoadConfig() (*Config, error) {
+func LoadConfig(projectPath string) (*Config, error) {
 	v := viper.New()
 
 	// Set config name and type
@@ -40,7 +40,7 @@ func LoadConfig() (*Config, error) {
 	v.AddConfigPath(filepath.Join(homeDir, "AppData", "Roaming", "git-review"))
 
 	// Local project config
-	v.AddConfigPath(".")
+	v.AddConfigPath(projectPath)
 	v.SetConfigName(".gitreview")
 
 	// Read config

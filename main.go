@@ -12,8 +12,14 @@ import (
 var AppVersion = "dev"
 
 func main() {
-	// Load configuration
-	cfg, err := config.LoadConfig()
+	// Initialize command flags before loading config
+	if err := cmd.InitializeFlags(); err != nil {
+		fmt.Printf("Error initializing flags: %v\n", err)
+		os.Exit(1)
+	}
+
+	// Load configuration with project path
+	cfg, err := config.LoadConfig(cmd.ProjectPath)
 	if err != nil {
 		fmt.Printf("Error loading config: %v\n", err)
 		os.Exit(1)
