@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/gifflet/git-review/internal/ai"
 	"github.com/spf13/viper"
 )
 
@@ -17,6 +18,12 @@ type Config struct {
 			Model string `mapstructure:"model" default:"gpt-4o"`
 		} `mapstructure:"openai"`
 	} `mapstructure:"ai"`
+}
+
+// GetAIProvider creates a new AI provider based on configuration
+func (c *Config) GetAIProvider() (ai.Provider, error) {
+	cfg := c.AI
+	return ai.NewProvider(cfg.Provider, cfg.OpenAI.Token, cfg.OpenAI.Model)
 }
 
 // LoadConfig reads configuration from files and environment variables
