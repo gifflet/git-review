@@ -1,0 +1,33 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Core Feature Rules for Git Review
+
+## 1. Git Extension Compatibility  
+- **Git Review** must function as a natural extension of Git, seamlessly integrating with existing workflows.  
+- Commands should follow the Git CLI convention, e.g., `git review <subcommand>`.  
+- Avoid modifying Git internals or requiring non-standard Git configurations.  
+
+## 2. Review Generation Based on PR Diff  
+- The tool must analyze the differences between the PR branch and the main branch.  
+- Generate structured and meaningful review comments based on detected changes.  
+- Support filtering changes by file type, specific directories, or commit messages.  
+- Output should be formatted in a way that can be easily parsed or exported (e.g., Markdown, JSON).  
+
+## 3. AI-Powered Review Analysis  
+- AI should analyze the diff and provide detailed insights, including potential issues and best practices.  
+- The review generation should be context-aware, considering coding standards, performance, and security concerns.  
+- AI analysis should be optional and configurable, allowing users to enable or disable it.  
+- Users should be able to provide custom prompts or guidelines to influence AI-generated reviews.  
+
+## 4. Contextual AI Review Rules  
+- The AI must consider **Markdown-based review rules** stored in the Git Review configuration directory and/or the repository itself.  
+- The configuration should allow project-specific review rules and global review rules.  
+- Rules must be version-controlled to ensure consistency across different development environments.  
+- AI-generated reviews should indicate which rules were referenced for transparency and traceability.  
+
+---
+
+These rules ensure that **Git Review** remains efficient, intuitive, and adaptable while maintaining high-quality review standards.  

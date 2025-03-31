@@ -1,0 +1,55 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Git Review Development Rules
+
+## 1. Simplicity and Efficiency
+- Code must be concise, readable, and easy to maintain.
+- Avoid unnecessary dependencies to keep the CLI lightweight.
+- Operations should be fast, ensuring minimal response time.
+
+## 2. Git Compatibility
+- The tool should work seamlessly with Git repositories without requiring external modifications.
+- Support different Git workflows, including `merge`, `rebase`, and `cherry-pick`.
+- Enable comparisons between commits, branches, and pull requests.
+
+## 3. Intuitive Command-Line Interface (CLI)
+- Commands should follow a consistent and intuitive pattern, similar to Git.
+- Example: `git-review compare <commit1> <commit2>`
+- Error messages should be clear and provide helpful guidance.
+
+## 4. Support for Multiple Output Formats
+- Allow exporting comparisons in formats such as JSON, Markdown, and formatted diffs.
+- Support colored and well-structured output for terminal readability.
+
+## 5. Integration with Artificial Intelligence
+- AI should assist in generating insights about code changes, suggesting improvements.
+- The AI feature should be optional, allowing users to enable or disable it as needed.
+
+## 6. Automated Testing and Code Quality
+- Ensure a minimum coverage of unit and integration tests for each feature.
+- Follow established coding standards (linting, auto-formatting).
+- Use tools like `golangci-lint` and `gofmt` for code consistency.
+
+## 7. Open Source and Contribution
+- Follow best practices for open-source development.
+- Maintain clear and concise documentation with usage examples.
+- Issues and PRs should be well-described and follow a predefined template.
+
+## 8. Security and Privacy
+- No sensitive data should be stored or transmitted without user consent.
+- Ensure compatibility with secure authentication methods for GitHub, GitLab, and other platforms.
+
+## 9. Scalability and Extensibility
+- The software design should allow easy extension of future functionalities.
+- Modularization to facilitate maintenance and the addition of new commands.
+
+## 10. Performance and Efficient Resource Usage
+- Optimize memory usage to handle large repositories efficiently.
+- Use asynchronous processing for time-consuming operations whenever applicable.
+
+---
+
+These rules ensure an organized and efficient development process for **Git Review**, adhering to best practices while maintaining the project's vision.
