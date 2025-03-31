@@ -3,15 +3,17 @@ package ai
 import (
 	"context"
 
+	"github.com/gifflet/git-review/internal/types"
 	"github.com/tmc/langchaingo/llms"
 	"github.com/tmc/langchaingo/llms/openai"
 )
 
 type OpenAIProvider struct {
-	llm llms.LLM
+	llm          llms.LLM
+	systemPrompt string
 }
 
-func NewOpenAIProvider(token, model string) (Provider, error) {
+func NewOpenAIProvider(token, model, systemPrompt string) (types.Provider, error) {
 	llm, err := openai.New(
 		openai.WithToken(token),
 		openai.WithModel(model),
@@ -19,9 +21,20 @@ func NewOpenAIProvider(token, model string) (Provider, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &OpenAIProvider{llm: llm}, nil
+	return &OpenAIProvider{
+		llm:          llm,
+		systemPrompt: systemPrompt,
+	}, nil
 }
 
 func (p *OpenAIProvider) Generate(ctx context.Context, prompt string) (string, error) {
-	return llms.GenerateFromSinglePrompt(ctx, p.llm, prompt)
+	content := []llms.MessageContent{
+		llms.TextParts(llms.ChatMessageTypeSystem, p.systemPrompt),
+		llms.TextParts(llms.ChatMessageTypeHuman, prompt),
+	}
+	completion, err := p.llm.GenerateContent(ctx, content)
+	if err != nil {
+		return "", err
+	}
+	return completion.Choices[0].Content, nil
 }

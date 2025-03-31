@@ -20,7 +20,7 @@ var (
 	AppVersion = "dev"
 
 	// Configuration
-	appConfig *config.Config
+	AppConfig *config.Config
 
 	// Root command
 	rootCmd = &cobra.Command{
@@ -55,7 +55,7 @@ changes between Git commits.`,
 
 // SetConfig sets the application configuration
 func SetConfig(cfg *config.Config) {
-	appConfig = cfg
+	AppConfig = cfg
 }
 
 // InitializeFlags parses command line flags before executing the main command

@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/gifflet/git-review/internal/ai"
+	"github.com/gifflet/git-review/internal/types"
 	"github.com/spf13/viper"
 )
 
@@ -15,15 +16,27 @@ type Config struct {
 		Provider string `mapstructure:"provider"`
 		OpenAI   struct {
 			Token string `mapstructure:"token"`
-			Model string `mapstructure:"model" default:"gpt-4o"`
+			Model string `mapstructure:"model"`
 		} `mapstructure:"openai"`
+		SystemPrompt string `mapstructure:"system_prompt"`
 	} `mapstructure:"ai"`
 }
 
+func (c *Config) GetOpenAIToken() string {
+	return c.AI.OpenAI.Token
+}
+
+func (c *Config) GetOpenAIModel() string {
+	return c.AI.OpenAI.Model
+}
+
+func (c *Config) GetSystemPrompt() string {
+	return c.AI.SystemPrompt
+}
+
 // GetAIProvider creates a new AI provider based on configuration
-func (c *Config) GetAIProvider() (ai.Provider, error) {
-	cfg := c.AI
-	return ai.NewProvider(cfg.Provider, cfg.OpenAI.Token, cfg.OpenAI.Model)
+func (c *Config) GetAIProvider() (types.Provider, error) {
+	return ai.NewProvider(c.AI.Provider, c)
 }
 
 // LoadConfig reads configuration from files and environment variables
@@ -33,6 +46,11 @@ func LoadConfig(projectPath string) (*Config, error) {
 	// Set config name and type
 	v.SetConfigName("config")
 	v.SetConfigType("yaml")
+
+	// Set default values
+	v.SetDefault("ai.provider", "openai")
+	v.SetDefault("ai.openai.model", "gpt-4o")
+	v.SetDefault("ai.system_prompt", "You are a helpful assistant that reviews code changes. You are given a git diff with the changes made to the code. You need to review the changes and provide a list of potential improvements.")
 
 	// Add global config paths
 	homeDir, err := os.UserHomeDir()

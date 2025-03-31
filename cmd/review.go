@@ -18,6 +18,12 @@ func formatCommitHash(hash string) string {
 
 // executeReview executes the main logic of the program
 func executeReview() {
+	// provider, err := AppConfig.GetAIProvider()
+	// if err != nil {
+	// 	fmt.Printf("Error getting AI provider: %v\n", err)
+	// 	os.Exit(1)
+	// }
+
 	// Format commit hashes
 	initialCommit = formatCommitHash(initialCommit)
 
