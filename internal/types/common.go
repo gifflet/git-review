@@ -13,3 +13,13 @@ type AIConfig interface {
 	GetOpenAIModel() string
 	GetSystemPrompt() string
 }
+
+// Review represents a single review comment for a specific file and line
+type Review struct {
+	Comment      string
+	FilePath     string
+	LinePosition int
+}
+
+// ReviewList represents a list of reviews
+type ReviewList []Review
