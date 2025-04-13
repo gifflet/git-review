@@ -1,0 +1,21 @@
+prompt: specs/spec_ai_review_integration.md
+
+coder_model: claude-3-5-sonnet
+
+context_editable:
+  - internal/ai/ai.go
+  - internal/ai/ai_review.go
+  - internal/ai/ai_review_test.go
+  - internal/config/config.go
+  - cmd/root.go
+
+context_read_only:
+  - README.md
+
+execution_command: go test ./...
+
+max_iterations: 5
+
+evaluator_model: gpt-4o
+
+evaluator: default
