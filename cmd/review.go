@@ -77,9 +77,21 @@ func executeReview() {
 
 	// For each file, extract and save the diff
 	for _, file := range files {
-		diffCmd := exec.Command("git", "diff", initialCommit, finalCommit, "--", file)
-		diffCmd.Dir = absProjectPath
-		diff, err := diffCmd.Output()
+		var diff []byte
+		var err error
+
+		if initialCommit == finalCommit {
+			// When commits are the same, use git show to get the file changes
+			diffCmd := exec.Command("git", "show", "--pretty=format:", initialCommit, "--", file)
+			diffCmd.Dir = absProjectPath
+			diff, err = diffCmd.Output()
+		} else {
+			// When commits are different, use git diff as before
+			diffCmd := exec.Command("git", "diff", initialCommit, finalCommit, "--", file)
+			diffCmd.Dir = absProjectPath
+			diff, err = diffCmd.Output()
+		}
+
 		if err != nil {
 			fmt.Printf("Error getting diff for file %s: %v\n", file, err)
 			continue
