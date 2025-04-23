@@ -106,6 +106,28 @@ func executeReview() {
 func getModifiedFiles(absProjectPath, initialCommit, finalCommit, mainBranch string) []string {
 	var files []string
 
+	// If initial and final commits are the same, use git show to get modified files
+	if initialCommit == finalCommit {
+		cmd := exec.Command("git", "show", "--name-only", "--format=", initialCommit)
+		cmd.Dir = absProjectPath
+		cmd.Stderr = os.Stderr
+		output, err := cmd.Output()
+		if err != nil {
+			if exitErr, ok := err.(*exec.ExitError); ok {
+				fmt.Printf("Git error: %s\n", string(exitErr.Stderr))
+			}
+			fmt.Printf("Error executing git show: %v\n", err)
+			os.Exit(1)
+		}
+		allFiles := strings.Split(strings.TrimSpace(string(output)), "\n")
+		for _, file := range allFiles {
+			if file != "" {
+				files = append(files, file)
+			}
+		}
+		return files
+	}
+
 	if mainBranch != "" {
 		// First get all files modified between initial and final commit
 		cmd := exec.Command("git", "diff", "--name-only",
