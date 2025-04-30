@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/gifflet/git-review/internal/config"
 	"github.com/spf13/cobra"
 )
 
@@ -12,11 +13,14 @@ var (
 	initialCommit string
 	finalCommit   string
 	mainBranch    string
-	projectPath   string
+	ProjectPath   string
 	outputDir     string
 
 	// Application version
 	AppVersion = "dev"
+
+	// Configuration
+	AppConfig *config.Config
 
 	// Root command
 	rootCmd = &cobra.Command{
@@ -49,6 +53,17 @@ changes between Git commits.`,
 	}
 )
 
+// SetConfig sets the application configuration
+func SetConfig(cfg *config.Config) {
+	AppConfig = cfg
+}
+
+// InitializeFlags parses command line flags before executing the main command
+func InitializeFlags() error {
+	// Parse flags without executing the root command
+	return rootCmd.ParseFlags(os.Args[1:])
+}
+
 // Execute adds all child commands to the root command and sets flags
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
@@ -62,7 +77,7 @@ func init() {
 	rootCmd.Flags().StringVarP(&initialCommit, "initial", "i", "", "Starting commit hash for comparison (required)")
 	rootCmd.Flags().StringVarP(&finalCommit, "final", "f", "HEAD", "Ending commit hash (defaults to HEAD)")
 	rootCmd.Flags().StringVarP(&mainBranch, "main-branch", "m", "", "Main branch for refined comparisons")
-	rootCmd.Flags().StringVarP(&projectPath, "project-path", "p", ".", "Project directory path")
+	rootCmd.Flags().StringVarP(&ProjectPath, "project-path", "p", ".", "Project directory path")
 	rootCmd.Flags().StringVarP(&outputDir, "output-dir", "o", "git-review", "Output directory for diff files")
 
 	// Mark initialCommit as required

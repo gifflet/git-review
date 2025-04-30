@@ -1,11 +1,14 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/gifflet/git-review/internal/ai"
 )
 
 // formatCommitHash truncates the commit hash to 7 characters
@@ -18,11 +21,17 @@ func formatCommitHash(hash string) string {
 
 // executeReview executes the main logic of the program
 func executeReview() {
+	provider, err := AppConfig.GetAIProvider()
+	if err != nil {
+		fmt.Printf("Error getting AI provider: %v\n", err)
+		os.Exit(1)
+	}
+
 	// Format commit hashes
 	initialCommit = formatCommitHash(initialCommit)
 
 	// Convert relative path to absolute if needed
-	absProjectPath, err := filepath.Abs(projectPath)
+	absProjectPath, err := filepath.Abs(ProjectPath)
 	if err != nil {
 		fmt.Printf("Error resolving project path: %v\n", err)
 		os.Exit(1)
@@ -75,7 +84,7 @@ func executeReview() {
 		os.Exit(0)
 	}
 
-	// For each file, extract and save the diff
+	// For each file, extract diff and generate review
 	for _, file := range files {
 		var diff []byte
 		var err error
@@ -99,19 +108,40 @@ func executeReview() {
 
 		// Create output filename (replacing '/' with '_')
 		safeFileName := strings.ReplaceAll(file, "/", "_")
-		outputPath := filepath.Join(dirName, safeFileName+".diff")
+		diffOutputPath := filepath.Join(dirName, safeFileName+".diff")
+		reviewOutputPath := filepath.Join(dirName, safeFileName+".review")
 
 		// Save diff to file
-		err = os.WriteFile(outputPath, diff, 0644)
+		err = os.WriteFile(diffOutputPath, diff, 0644)
 		if err != nil {
 			fmt.Printf("Error saving diff for file %s: %v\n", file, err)
 			continue
 		}
 
-		fmt.Printf("Diff saved for: %s\n", file)
+		// Generate review using AI
+		reviews, err := ai.Review(context.Background(), provider, file, string(diff))
+		if err != nil {
+			fmt.Printf("Error generating review for file %s: %v\n", file, err)
+			continue
+		}
+
+		// Format review output
+		var reviewOutput strings.Builder
+		for _, review := range reviews {
+			reviewOutput.WriteString(fmt.Sprintf("Line %d:\n%s\n\n", review.LinePosition, review.Comment))
+		}
+
+		// Save review to file
+		err = os.WriteFile(reviewOutputPath, []byte(reviewOutput.String()), 0644)
+		if err != nil {
+			fmt.Printf("Error saving review for file %s: %v\n", file, err)
+			continue
+		}
+
+		fmt.Printf("Review generated for: %s\n", file)
 	}
 
-	fmt.Printf("\nAll diffs have been saved to directory: %s\n", dirName)
+	fmt.Printf("\nAll reviews have been saved to directory: %s\n", dirName)
 }
 
 // getModifiedFiles gets the list of files modified between two commits
